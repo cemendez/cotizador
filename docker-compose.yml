@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    container_name: cotizador-db
+    environment:
+      POSTGRES_USER: cotizador
+      POSTGRES_PASSWORD: cotizador
+      POSTGRES_DB: cotizador
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
