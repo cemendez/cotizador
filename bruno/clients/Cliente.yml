@@ -1,0 +1,15 @@
+info:
+  name: Cliente
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/clients/35b162f5-fcca-4bc6-a957-9cbdb74ab262"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

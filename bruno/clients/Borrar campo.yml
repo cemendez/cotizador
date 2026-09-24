@@ -1,0 +1,18 @@
+info:
+  name: Borrar campo
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/clients/35b162f5-fcca-4bc6-a957-9cbdb74ab262"
+  body:
+    type: json
+    data: '{ "company": null }'
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

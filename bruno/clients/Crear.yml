@@ -1,0 +1,29 @@
+info:
+  name: Crear
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/clients"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Agencia Bermax",
+        "company": "Bermax S.C.",
+        "email": "contacto@bermax.mx",
+        "rfc": "berm121212cd2"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: if (res.body && res.body.id) bru.setEnvVar("clientId", res.body.id);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
