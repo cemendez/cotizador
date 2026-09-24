@@ -1,14 +1,17 @@
 info:
-  name: Borrar campo
+  name: cambio de estatus
   type: http
-  seq: 5
+  seq: 7
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/clients/35b162f5-fcca-4bc6-a957-9cbdb74ab262"
+  url: "{{baseUrl}}/quotes/{{quoteId}}/status"
   body:
     type: json
-    data: '{ "company": null }'
+    data: |-
+      {
+        "status": "SENT"
+      }
   auth: inherit
 
 settings:

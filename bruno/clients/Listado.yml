@@ -8,6 +8,14 @@ http:
   url: "{{baseUrl}}/clients"
   auth: inherit
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.body && res.body.data && res.body.data.length > 0) {
+          bru.setEnvVar("clientId", res.body.data[0].id, { persist: true });
+        }
+
 settings:
   encodeUrl: true
   timeout: 0

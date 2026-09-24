@@ -31,9 +31,9 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 - [x] Registro e inicio de sesión con JWT y refresh token rotativo
 - [x] CRUD de clientes con paginación, búsqueda y validación de RFC
 - [x] Aislamiento de datos por usuario (cada usuario solo ve lo suyo)
-- [ ] Cotizaciones con conceptos, subtotal, IVA y total
-- [ ] Folio consecutivo por usuario (`COT-2026-0001`)
-- [ ] Flujo de estados: borrador → enviada → aceptada / rechazada / vencida
+- [x] Cotizaciones con conceptos, subtotal, IVA y total
+- [x] Folio consecutivo por usuario (`COT-2026-0001`)
+- [x] Flujo de estados: borrador → enviada → aceptada / rechazada / vencida
 - [ ] Generación de contrato en PDF para cotizaciones aceptadas
 - [ ] Frontend en React
 - [ ] Tests automatizados
@@ -318,7 +318,7 @@ Secuencia básica: `login → me → refresh → me → logout → refresh (401)
 1. ~~Cimientos: monorepo, Docker, NestJS, Prisma~~
 2. ~~Autenticación~~
 3. ~~CRUD de clientes~~
-4. Módulo de cotizaciones (conceptos, totales, folios, estados)
+4. ~~Módulo de cotizaciones (conceptos, totales, folios, estados)~~
 5. Generación de contrato en PDF
 6. Frontend: login, clientes y cotizaciones
 7. Tests e2e de la API

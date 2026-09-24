@@ -1,14 +1,17 @@
 info:
-  name: Borrar campo
+  name: Cambio en valor
   type: http
   seq: 5
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/clients/35b162f5-fcca-4bc6-a957-9cbdb74ab262"
+  url: "{{baseUrl}}/quotes/{{quoteId}}"
   body:
     type: json
-    data: '{ "company": null }'
+    data: |-
+      {
+        "taxRate": 0
+      }
   auth: inherit
 
 settings:

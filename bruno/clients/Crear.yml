@@ -20,7 +20,10 @@ http:
 runtime:
   scripts:
     - type: after-response
-      code: if (res.body && res.body.id) bru.setEnvVar("clientId", res.body.id);
+      code: |-
+        if (res.body && res.body.id) {
+          bru.setEnvVar("clientId", res.body.id, { persist: true });
+        }
 
 settings:
   encodeUrl: true

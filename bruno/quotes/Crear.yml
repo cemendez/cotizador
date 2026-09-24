@@ -1,0 +1,33 @@
+info:
+  name: Crear
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/quotes"
+  body:
+    type: json
+    data: |-
+      {
+        "clientId": "{{clientId}}",
+        "title": "Creación Intranet",
+        "validUntil": "2026-12-31",
+        "terms": "50% de anticipo, 50% contra entrega.",
+        "items": [
+          { "description": "Diseño de arquitectura", "unit": "servicio", "quantity": 1, "unitPrice": 15000 },
+          { "description": "Horas de desarrollo", "unit": "hora", "quantity": 130, "unitPrice": 450 }
+        ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: if (res.body && res.body.id) bru.setEnvVar("quoteId", res.body.id);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
