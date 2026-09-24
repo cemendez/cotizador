@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
 import { Trim } from '../../common/decorators/trim.decorator.js';
 
-export class ListClientsQueryDto {
+export class ListClientsQueryDto extends PaginationQueryDto {
     @IsOptional()
     @Type(() => Number)
     @IsInt()

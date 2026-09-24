@@ -17,17 +17,18 @@ enum QuoteStatus {
 }
 
 model User {
-    id            String         @id @default(uuid())
-    email         String         @unique
-    passwordHash  String
-    name          String
-    businessName  String?
-    rfc           String?
-    createdAt     DateTime       @default(now())
-    updatedAt     DateTime       @updatedAt
-    clients       Client[]
-    quotes        Quote[]
-    refreshTokens RefreshToken[]
+    id              String         @id @default(uuid())
+    email           String         @unique
+    passwordHash    String
+    name            String
+    businessName    String?
+    rfc             String?
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
+    clients         Client[]
+    quotes          Quote[]
+    refreshTokens   RefreshToken[]
+    lastQuoteNumber Int            @default(0)
 }
 
 model RefreshToken {
@@ -95,6 +96,7 @@ model QuoteItem {
     quantity    Decimal @db.Decimal(10, 2)
     unitPrice   Decimal @db.Decimal(12, 2)
     position    Int
+    amount      Decimal @db.Decimal(12, 2)
     quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
     @@index([quoteId])
