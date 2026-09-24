@@ -1,5 +1,5 @@
 import {
-    Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query,
+    Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query, StreamableFile
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
@@ -50,5 +50,23 @@ export class QuotesController {
     @HttpCode(204)
     remove(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
         return this.quotes.remove(user.id, id);
+    }
+
+    @Get(':id/pdf')
+    async quotePdf(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+        const { buffer, filename } = await this.quotes.generatePdf(user.id, id, 'quote');
+        return new StreamableFile(buffer, {
+            type: 'application/pdf',
+            disposition: `inline; filename="${filename}"`,
+        });
+    }
+
+    @Get(':id/contract')
+    async contractPdf(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+        const { buffer, filename } = await this.quotes.generatePdf(user.id, id, 'contract');
+        return new StreamableFile(buffer, {
+            type: 'application/pdf',
+            disposition: `inline; filename="${filename}"`, // Cambiar disposition a attachment para forzar descarga en el frontend
+        });
     }
 }

@@ -34,7 +34,7 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 - [x] Cotizaciones con conceptos, subtotal, IVA y total
 - [x] Folio consecutivo por usuario (`COT-2026-0001`)
 - [x] Flujo de estados: borrador → enviada → aceptada / rechazada / vencida
-- [ ] Generación de contrato en PDF para cotizaciones aceptadas
+- [x] Generación de contrato en PDF para cotizaciones aceptadas
 - [ ] Frontend en React
 - [ ] Tests automatizados
 - [ ] Docker completo y despliegue continuo
@@ -319,7 +319,7 @@ Secuencia básica: `login → me → refresh → me → logout → refresh (401)
 2. ~~Autenticación~~
 3. ~~CRUD de clientes~~
 4. ~~Módulo de cotizaciones (conceptos, totales, folios, estados)~~
-5. Generación de contrato en PDF
+5. ~~Generación de contrato en PDF~~
 6. Frontend: login, clientes y cotizaciones
 7. Tests e2e de la API
 8. Dockerización completa

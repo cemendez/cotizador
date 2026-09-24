@@ -5,6 +5,8 @@ import { CreateQuoteDto } from './dto/create-quote.dto.js';
 import { ListQuotesQueryDto } from './dto/list-quotes-query.dto.js';
 import { UpdateQuoteDto } from './dto/update-quote.dto.js';
 import { calculateQuote, formatFolio } from './quote-calculator.js';
+import { PdfService } from '../pdf/pdf.service.js';
+import { buildQuotePdf, type QuotePdfKind } from './quote-pdf.builder.js';
 
 const listInclude = {
     client: { select: { id: true, name: true, company: true } },
@@ -29,7 +31,7 @@ function withFolio<T extends { number: number; createdAt: Date }>(quote: T) {
 
 @Injectable()
 export class QuotesService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService, private readonly pdf: PdfService) { }
 
     async findAll(userId: string, query: ListQuotesQueryDto) {
         const { page, pageSize, status, clientId, search } = query;
@@ -173,5 +175,26 @@ export class QuotesService {
     private async assertClient(userId: string, clientId: string) {
         const exists = await this.prisma.client.count({ where: { id: clientId, userId } });
         if (!exists) throw new NotFoundException('Cliente no encontrado');
+    }
+
+    async generatePdf(userId: string, id: string, kind: QuotePdfKind) {
+        const quote = await this.findOwned(userId, id);
+
+        if (kind === 'contract' && quote.status !== 'ACCEPTED') {
+            throw new ConflictException('El contrato solo está disponible para cotizaciones aceptadas');
+        }
+
+        const issuer = await this.prisma.user.findUniqueOrThrow({
+            where: { id: userId },
+            select: { name: true, businessName: true, rfc: true, email: true },
+        });
+
+        const folio = formatFolio(quote.number, quote.createdAt);
+        const buffer = await this.pdf.render(buildQuotePdf({ ...quote, folio, issuer }, kind));
+
+        return {
+            buffer,
+            filename: kind === 'contract' ? `${folio}-contrato.pdf` : `${folio}.pdf`,
+        };
     }
 }
