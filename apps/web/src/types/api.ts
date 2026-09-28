@@ -21,3 +21,17 @@ export interface Paginated<T> {
         totalPage: number;
     };
 }
+
+export interface Client {
+    id: string;
+    name: string;
+    company: string | null;
+    email: string | null;
+    phone: string | null;
+    rfc: string | null;
+    address: string | null;
+    notes: string | null;
+    createdAt: string;
+    updatedAt: string;
+    _count?: { quotes: number };
+}

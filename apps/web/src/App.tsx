@@ -4,6 +4,8 @@ import { AppLayout } from './components/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ClientFormPage } from './features/clients/ClientFormPage';
+import { ClientsPage } from './features/clients/ClientsPage';
 
 const Placeholder = ({ title }: { title: string }) => (
   <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
@@ -21,7 +23,11 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
-            <Route path="/clients" element={<Placeholder title="Clientes" />} />
+
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/clients/new" element={<ClientFormPage />} />
+            <Route path="/clients/:id/edit" element={<ClientFormPage />} />
+
             <Route path="/quotes" element={<Placeholder title="Cotizaciones" />} />
           </Route>
         </Route>
