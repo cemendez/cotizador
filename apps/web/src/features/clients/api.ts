@@ -62,3 +62,12 @@ export function useDeleteClient() {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: clientKeys.all }),
     });
 }
+
+export function useClientOptions() {
+    return useQuery({
+        queryKey: [...clientKeys.all, 'options'],
+        queryFn: () => api<Paginated<Client>>('/clients?pageSize=100'),
+        select: (res) => res.data,
+        staleTime: 60_000,
+    })
+}

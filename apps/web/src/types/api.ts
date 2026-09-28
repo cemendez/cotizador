@@ -35,3 +35,42 @@ export interface Client {
     updatedAt: string;
     _count?: { quotes: number };
 }
+
+export type QuoteStatus = "DRAFT" | "SENT" | "ACCEPTED" | "REJECTED" | "EXPIRED";
+
+export interface QuoteItem {
+    id: string;
+    description: string;
+    unit: string | null;
+    quantity: string;
+    unitPrice: string;
+    amount: string;
+    position: number;
+}
+
+export interface QuoteSummary {
+    id: string;
+    number: number;
+    folio: string;
+    title: string;
+    status: QuoteStatus;
+    currency: string;
+    taxRate: string;
+    subtotal: string;
+    taxAmout: string;
+    total: string;
+    validUntil: string | null;
+    sentAt: string | null;
+    acceptedAt: string | null;
+    createdAt: string | null;
+    updateAt: string;
+    client: { id: string; name: string; company: string | null };
+}
+
+export interface Quote extends QuoteSummary {
+    clientId: string;
+    notes: string | null;
+    terms: string | null;
+    client: QuoteSummary['client'] & { email: string | null; rfc: string | null };
+    items: QuoteItem[];
+}

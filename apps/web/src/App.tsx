@@ -6,10 +6,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ClientFormPage } from './features/clients/ClientFormPage';
 import { ClientsPage } from './features/clients/ClientsPage';
-
-const Placeholder = ({ title }: { title: string }) => (
-  <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
-)
+import { QuoteDetailPage } from './features/quotes/QuoteDetailPage';
+import { QuoteFormPage } from './features/quotes/QuoteFormPage';
+import { QuotesPage } from './features/quotes/QuotesPage';
 
 export default function App() {
   return (
@@ -28,7 +27,10 @@ export default function App() {
             <Route path="/clients/new" element={<ClientFormPage />} />
             <Route path="/clients/:id/edit" element={<ClientFormPage />} />
 
-            <Route path="/quotes" element={<Placeholder title="Cotizaciones" />} />
+            <Route path="/quotes" element={<QuotesPage />} />
+            <Route path="/quotes/new" element={<QuoteFormPage />} />
+            <Route path="/quotes/:id" element={<QuoteDetailPage />} />
+            <Route path="/quotes/:id/edit" element={<QuoteFormPage />} />
           </Route>
         </Route>
 

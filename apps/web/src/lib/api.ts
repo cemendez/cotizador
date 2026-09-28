@@ -59,10 +59,11 @@ async function toApiError(res: Response): Promise<ApiError> {
 interface RequestOptions extends Omit<RequestInit, 'body'> {
     body?: unknown;
     retryOnUnauthorized?: boolean;
+    responseType?: 'json' | 'blob';
 }
 
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const { body, retryOnUnauthorized = true, ...init } = options;
+    const { body, retryOnUnauthorized = true, responseType = 'json', ...init } = options;
 
     const headers = new Headers(init.headers);
     if (body !== undefined) headers.set('Content-Type', 'application/json');
@@ -84,5 +85,5 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
 
     if (!res.ok) throw await toApiError(res);
     if (res.status === 204) return undefined as T;
-    return (await res.json()) as T;
+    return (responseType === 'blob' ? await res.blob() : await res.json()) as T;
 }

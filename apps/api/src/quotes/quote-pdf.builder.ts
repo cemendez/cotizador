@@ -48,6 +48,10 @@ const decimal = (value: DecimalLike) =>
 const longDate = (date: Date) =>
     new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeZone: 'America/Mexico_City' }).format(date);
 
+// Fechas de solo día se guardan a medianoche UTC: formatearlas en UTC evita que se muestren un día antes
+const longDateOnly = (date: Date) =>
+    new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeZone: 'UTC' }).format(date);
+
 const right = (text: string, bold = false): TableCell => ({ text, alignment: 'right', bold });
 
 function partyBlock(label: string, party: Party): Content {
@@ -192,7 +196,7 @@ export function buildQuotePdf(data: QuotePdfData, kind: QuotePdfKind): TDocument
                     { text: data.folio, alignment: 'right', bold: true },
                     { text: longDate(docDate), alignment: 'right' },
                     ...(!isContract && data.validUntil
-                        ? [{ text: `Vigencia: ${longDate(data.validUntil)}`, alignment: 'right' as const }]
+                        ? [{ text: `Vigencia: ${longDateOnly(data.validUntil)}`, alignment: 'right' as const }]
                         : []),
                 ],
             },

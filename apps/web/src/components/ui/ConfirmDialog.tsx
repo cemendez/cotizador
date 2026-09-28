@@ -7,6 +7,7 @@ interface Props {
     title: string;
     children: ReactNode;
     confirmLabel?: string;
+    confirmVariant?: 'primary' | 'danger';
     loading?: boolean;
     error?: string | null;
     onConfirm: () => void;
@@ -18,6 +19,7 @@ export function ConfirmDialog({
     title,
     children,
     confirmLabel = 'Eliminar',
+    confirmVariant = 'danger',
     loading = false,
     error,
     onConfirm,
@@ -46,7 +48,7 @@ export function ConfirmDialog({
                 <Button variant="secondary" onClick={onClose} disabled={loading}>
                     Cancelar
                 </Button>
-                <Button variant="danger" onClick={onConfirm} loading={loading}>
+                <Button variant={confirmVariant} onClick={onConfirm} loading={loading}>
                     {confirmLabel}
                 </Button>
             </div>
