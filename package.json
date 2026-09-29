@@ -11,7 +11,8 @@
     "db:migrate": "pnpm --filter api exec prisma migrate dev",
     "db:generate": "pnpm --filter api exec prisma generate",
     "db:studio": "pnpm --filter api exec prisma studio",
-    "db:reset": "pnpm --filter api exec prisma migrate reset"
+    "db:reset": "pnpm --filter api exec prisma migrate reset",
+    "test:api": "pnpm --filter api test --run"
   },
   "keywords": [],
   "author": "",

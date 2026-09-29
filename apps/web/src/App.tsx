@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { GuestOnly, RequireAuth } from './auth/route-guards';
 import { AppLayout } from './components/AppLayout';
-import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ClientFormPage } from './features/clients/ClientFormPage';
@@ -9,6 +8,8 @@ import { ClientsPage } from './features/clients/ClientsPage';
 import { QuoteDetailPage } from './features/quotes/QuoteDetailPage';
 import { QuoteFormPage } from './features/quotes/QuoteFormPage';
 import { QuotesPage } from './features/quotes/QuotesPage';
+import { DashboardPage } from './features/dashboard/DashboardPage';
+import { ProfilePage } from './features/profile/ProfilePage';
 
 export default function App() {
   return (
@@ -22,6 +23,8 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
+
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="/clients" element={<ClientsPage />} />
             <Route path="/clients/new" element={<ClientFormPage />} />

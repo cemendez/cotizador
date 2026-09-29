@@ -6,15 +6,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { PrismaService } from '../prisma/prisma.service.js'
 import { LoginDto } from './dto/login.dto.js'
 import { RegisterDto } from './dto/register.dto.js'
-
-const publicUser = {
-    id: true,
-    email: true,
-    name: true,
-    businessName: true,
-    rfc: true,
-    createdAt: true,
-} as const;
+import { publicUser } from '../users/public-user.js'
 
 @Injectable()
 export class AuthService {

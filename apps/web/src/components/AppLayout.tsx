@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, Link } from 'react-router';
 import { useAuth } from '../auth/auth-context';
 import { Button } from './ui/Button'
 
@@ -32,7 +32,9 @@ export function AppLayout() {
                         ))}
                     </nav>
                     <div className="flex items-center gap-3">
-                        <span className="hidden text-sm text-slate-600 sm:inline">{user?.name}</span>
+                        <Link to="/profile" className="hidden text-sm text-slate-600 hover:text-indigo-600 sm:inline">
+                            {user?.name}
+                        </Link>
                         <Button variant="secondary" onClick={logout}>
                             Salir
                         </Button>

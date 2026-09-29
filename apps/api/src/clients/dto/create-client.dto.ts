@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
+import { RFC_REGEX } from '../../common/validation/rfc.js';
 
 export class CreateClientDto {
     @Trim()
@@ -30,7 +31,7 @@ export class CreateClientDto {
         typeof value === 'string' ? value.trim().toUpperCase() || null : value,
     )
     @IsOptional()
-    @Matches(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/, { message: 'RFC con formato inválido' })
+    @Matches(RFC_REGEX, { message: 'RFC con formato inválido' })
     rfc?: string | null;
 
     @Trim()

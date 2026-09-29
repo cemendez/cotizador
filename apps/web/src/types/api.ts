@@ -74,3 +74,30 @@ export interface Quote extends QuoteSummary {
     client: QuoteSummary['client'] & { email: string | null; rfc: string | null };
     items: QuoteItem[];
 }
+
+export interface MoneyByCurrency {
+    currency: string;
+    total: string;
+    count: number;
+}
+
+export interface DashboardQuote {
+    id: string;
+    folio: string;
+    title: string;
+    status: QuoteStatus;
+    total: string;
+    currency: string;
+    validUntil: string | null;
+    updatedAt: string;
+    client: { name: string; company: string | null };
+}
+
+export interface DashboardSummary {
+    clients: number;
+    statusCounts: Record<QuoteStatus, number>;
+    acceptedThisMonth: MoneyByCurrency[];
+    pending: MoneyByCurrency[];
+    expiringSoon: DashboardQuote[];
+    recent: DashboardQuote[];
+}

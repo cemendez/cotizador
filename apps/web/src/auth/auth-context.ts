@@ -11,6 +11,7 @@ export interface SignupData {
 
 export interface AuthContextValue {
     user: User | null;
+    updateUser: (user: User) => void;
     status: AuthStatus;
     login: (email: string, password: string) => Promise<void>;
     signup: (data: SignupData) => Promise<void>;
