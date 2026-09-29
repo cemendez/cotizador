@@ -1,6 +1,8 @@
 import { IsEmail, IsString, maxLength, MaxLength, MinLength } from 'class-validator';
+import { NormalizeEmail } from '../../common/decorators/normalize-email.decorator.js';
 
 export class RegisterDto {
+    @NormalizeEmail()
     @IsEmail({}, { message: 'Correo inválido' })
     email!: string;
 

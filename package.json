@@ -12,7 +12,9 @@
     "db:generate": "pnpm --filter api exec prisma generate",
     "db:studio": "pnpm --filter api exec prisma studio",
     "db:reset": "pnpm --filter api exec prisma migrate reset",
-    "test:api": "pnpm --filter api test --run"
+    "test:api": "pnpm --filter api test --run",
+    "db:test:up": "docker compose up -d db-test",
+    "test:e2e": "pnpm --filter api test:e2e"
   },
   "keywords": [],
   "author": "",

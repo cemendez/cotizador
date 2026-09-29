@@ -17,6 +17,7 @@ export class PdfService {
 
         // Nuestros documentos no cargan recursos remotos: bloquear URLs externas previene ataques SSRF
         pdfmake.setUrlAccessPolicy(() => false);
+        pdfmake.setLocalAccessPolicy(() => false);
     }
 
     render(doc: TDocumentDefinitions): Promise<Buffer> {

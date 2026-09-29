@@ -10,7 +10,7 @@ import { ApiError } from '../lib/api';
 const schema = z
     .object({
         name: z.string().trim().min(2, 'Mínimo 2 caracteres').max(100),
-        email: z.email('Correo inválido'),
+        email: z.string().trim().pipe(z.email('Correo inválido')),
         password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres').max(72),
         confirmPassword: z.string(),
     })

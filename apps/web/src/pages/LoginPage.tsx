@@ -8,7 +8,7 @@ import { TextField } from '../components/ui/TextField';
 import { ApiError } from '../lib/api';
 
 const schema = z.object({
-    email: z.email('Correo inválido'),
+    email: z.string().trim().pipe(z.email('Correo inválido')),
     password: z.string().min(1, 'Ingresa tu contraseña'),
 })
 
