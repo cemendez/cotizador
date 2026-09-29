@@ -52,7 +52,7 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 
 **Pendiente**
 
-- [ ] Tests e2e de la API
+- [x] Tests e2e de la API
 - [ ] Docker completo
 - [ ] CI/CD y despliegue
 
@@ -463,6 +463,7 @@ pnpm test:api
 | Import de `react-router-dom` falla | Se eliminó en React Router 8 | Importar desde `react-router` |
 | La vigencia se muestra un día antes | Fecha de solo día formateada en hora local | Formatear con `timeZone: 'UTC'` |
 | El PDF no abre en pestaña nueva | Bloqueador de pop-ups | La pestaña debe abrirse dentro del clic, antes de esperar la descarga |
+| `Access to local file denied by resource access policy: Helvetica` | La política local de pdfmake bloquea también las fuentes estándar | Permitir solo las 4 variantes de Helvetica en `setLocalAccessPolicy` |
 
 ---
 
@@ -487,7 +488,7 @@ pnpm test:api
 5. ~~Cotización y contrato en PDF~~
 6. ~~Frontend: sesión, clientes y cotizaciones~~
 7. ~~Dashboard y perfil~~
-8. Tests e2e de la API
+8. ~~Tests e2e de la API~~
 9. Dockerización completa
 10. CI/CD y despliegue
 

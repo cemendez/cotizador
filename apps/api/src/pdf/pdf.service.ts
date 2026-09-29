@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import pdfmake from 'pdfmake';
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
 
+// Las únicas "rutas" locales que pdfmake necesita: las 4 variantes de la fuente estándar Helvetica
+const ALLOWED_FONTS = new Set(['Helvetica', 'Helvetica-Bold', 'Helvetica-Oblique', 'Helvetica-BoldOblique']);
+
 @Injectable()
 export class PdfService {
     constructor() {
@@ -17,7 +20,7 @@ export class PdfService {
 
         // Nuestros documentos no cargan recursos remotos: bloquear URLs externas previene ataques SSRF
         pdfmake.setUrlAccessPolicy(() => false);
-        pdfmake.setLocalAccessPolicy(() => false);
+        pdfmake.setLocalAccessPolicy((path: string) => ALLOWED_FONTS.has(path));
     }
 
     render(doc: TDocumentDefinitions): Promise<Buffer> {
