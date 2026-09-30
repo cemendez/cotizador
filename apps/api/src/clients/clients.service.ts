@@ -52,6 +52,7 @@ export class ClientsService {
     }
 
     create(userId: string, dto: CreateClientDto) {
+        // oxlint-disable-next-line typescript/no-misused-spread
         return this.prisma.client.create({ data: { ...dto, userId } });
     }
 
