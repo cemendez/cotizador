@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DATABASE_URL: postgresql://cotizador:cotizador@localhost:5435/cotizador_test
+
+jobs:
+  checks:
+    name: Lint, tipos y tests unitarios
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Lint
+        run: pnpm run -r --if-present lint
+
+      - name: Compilar la API (verifica tipos)
+        run: pnpm --filter api build
+
+      - name: Compilar el frontend (tsc + vite)
+        run: pnpm --filter web build
+
+      - name: Tests unitarios
+        run: pnpm test:api
+
+  e2e:
+    name: Tests e2e (API + PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: cotizador
+          POSTGRES_PASSWORD: cotizador
+          POSTGRES_DB: cotizador_test
+        ports:
+          - 5435:5432
+        options: >-
+          --health-cmd "pg_isready -U cotizador -d cotizador_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Tests e2e
+        run: pnpm test:e2e
+
+  docker:
+    name: Construir imágenes Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Construir API y frontend
+        run: docker compose --profile app build
+        env:
+          JWT_ACCESS_SECRET: solo-para-ci
