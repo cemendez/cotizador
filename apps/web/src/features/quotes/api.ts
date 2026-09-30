@@ -17,7 +17,7 @@ export interface QuoteInput {
     validUntil: string | null;
     terms: string;
     notes: string;
-    items: Array<{ descriptions: string; unit: string; quantity: number; unitPrice: number }>;
+    items: Array<{ description: string; unit: string; quantity: number; unitPrice: number }>;
 }
 
 export const quoteKeys = {

@@ -53,7 +53,7 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 **Pendiente**
 
 - [x] Tests e2e de la API
-- [ ] Docker completo
+- [x] Docker completo
 - [ ] CI/CD y despliegue
 
 ---
@@ -253,6 +253,15 @@ Todos se ejecutan desde la raíz del proyecto.
 
 > En Prisma 7, `migrate dev` ya **no** ejecuta `generate` automáticamente.
 
+## Docker
+
+| Comando | Descripción |
+|---------|-------------|
+| `pnpm docker:dev` | Levanta API y Frontend en contenedores → <http://localhost:5173> |
+| `pnpm docker:api` | Solo API en contenedor → <http://localhost:3000/api> |
+| `pnpm docker:web` | Solo Frontend en contenedor → <http://localhost:5173> |
+| `pnpm docker:down` | Detiene todos los contenedores |
+
 ### Flujo al modificar el modelo de datos
 
 ```bash
@@ -445,6 +454,12 @@ pnpm test:api
 - **Totales en vivo con centavos enteros**, replicando el redondeo del backend, que sigue siendo la fuente de verdad.
 - **`<dialog>` nativo** para confirmaciones: accesible por defecto (Esc, foco, fondo).
 
+### Docker
+
+- Migraciones como contenedor de un solo uso, separado de la API.
+- nginx como único punto de entrada, con proxy a la API.
+- Imágenes multi-etapa sobre Debian slim, con la API ejecutándose sin privilegios.
+
 ---
 
 ## Solución de problemas
@@ -489,7 +504,7 @@ pnpm test:api
 6. ~~Frontend: sesión, clientes y cotizaciones~~
 7. ~~Dashboard y perfil~~
 8. ~~Tests e2e de la API~~
-9. Dockerización completa
+9. ~~Dockerización completa~~
 10. CI/CD y despliegue
 
 ### Mejoras identificadas

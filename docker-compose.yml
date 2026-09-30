@@ -10,6 +10,12 @@ services:
       - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cotizador -d cotizador"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   db-test:
     image: postgres:17
     container_name: cotizador-db-test
@@ -21,6 +27,60 @@ services:
       - "5435:5432"
     tmpfs:
       - /var/lib/postgresql/data
+
+  # ---- Sistema completo: docker compose --profile app up -d --build ----
+
+  migrate:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: migrate
+    environment:
+      DATABASE_URL: postgresql://cotizador:cotizador@db:5432/cotizador
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: api
+    init: true # PID 1 con manejo correcto de señales: `docker stop` no espera 10 segundos
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://cotizador:cotizador@db:5432/cotizador
+      PORT: 3000
+      WEB_ORIGIN: http://localhost:8080
+      NODE_ENV: production
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Define JWT_ACCESS_SECRET en el archivo .env de la raíz}
+      JWT_ACCESS_TTL_SECONDS: 900
+      REFRESH_TTL_DAYS: 7
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      # La imagen slim no trae curl: se usa el fetch de Node
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:

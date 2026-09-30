@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+!**/.env.example
+.git
+bruno
+**/*.md
+# El cliente de Prisma se regenera dentro de la imagen, nunca se copia el local
+apps/api/src/generated

@@ -14,12 +14,7 @@ export interface AuthResponse {
 
 export interface Paginated<T> {
     data: T[];
-    meta: {
-        page: number;
-        pageSize: number;
-        total: number;
-        totalPage: number;
-    };
+    meta: { page: number; pageSize: number; total: number; totalPages: number };
 }
 
 export interface Client {
@@ -57,13 +52,13 @@ export interface QuoteSummary {
     currency: string;
     taxRate: string;
     subtotal: string;
-    taxAmout: string;
+    taxAmount: string;
     total: string;
     validUntil: string | null;
     sentAt: string | null;
     acceptedAt: string | null;
-    createdAt: string | null;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
     client: { id: string; name: string; company: string | null };
 }
 

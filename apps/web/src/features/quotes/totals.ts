@@ -14,7 +14,7 @@ export function calculateTotals(items: ItemValues[], taxRate: number) {
 
     return {
         amounts: amounts.map((cents) => cents / 100),
-        aubtotal: subtotal / 100,
+        subtotal: subtotal / 100,
         taxAmount: taxAmount / 100,
         total: (subtotal + taxAmount) / 100,
     }

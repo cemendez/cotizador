@@ -6,7 +6,7 @@
   "scripts": {
     "dev:api": "pnpm --filter api start:dev",
     "dev:web": "pnpm --filter web dev",
-    "db:up": "docker compose up -d",
+    "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter api exec prisma migrate dev",
     "db:generate": "pnpm --filter api exec prisma generate",
@@ -14,7 +14,10 @@
     "db:reset": "pnpm --filter api exec prisma migrate reset",
     "test:api": "pnpm --filter api test --run",
     "db:test:up": "docker compose up -d db-test",
-    "test:e2e": "pnpm --filter api test:e2e"
+    "test:e2e": "pnpm --filter api test:e2e",
+    "docker:up": "docker compose --profile app up -d --build",
+    "docker:down": "docker compose --profile app down",
+    "docker:logs": "docker compose --profile app logs -f"
   },
   "keywords": [],
   "author": "",
