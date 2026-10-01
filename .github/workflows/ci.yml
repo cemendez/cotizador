@@ -7,7 +7,7 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -72,3 +72,52 @@ jobs:
         run: docker compose --profile app build
         env:
           JWT_ACCESS_SECRET: solo-para-ci
+
+  deploy:
+    name: Desplegar a producción
+    needs: [checks, e2e, docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Aplicar migraciones en Neon
+        run: pnpm --filter api exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+
+      - name: Desplegar la API en Render (este commit exacto)
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&ref=${GITHUB_SHA}"
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+      - name: Esperar a que la versión nueva esté activa
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          expected="${GITHUB_SHA::7}"
+          echo "Esperando que producción responda con el commit ${expected}..."
+          for attempt in $(seq 1 60); do
+            commit=$(curl -fsS --max-time 90 "${BASE_URL}/api/health/live" | jq -r '.commit // empty' 2>/dev/null || true)
+            echo "Intento ${attempt}: producción responde con '${commit:-sin respuesta}'"
+            if [ "${commit}" = "${expected}" ]; then
+              echo "La versión nueva está activa."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::El commit ${expected} no estuvo activo a tiempo. Revisa los logs en Render."
+          exit 1
+
+      - name: Verificar la conexión a la base de datos
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL }}
+        run: curl -fsS --max-time 90 "${BASE_URL}/api/health" | jq -e '.db == "connected"'
