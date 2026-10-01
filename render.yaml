@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: cotizador-api
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /api/health/live
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_TTL_SECONDS
+        value: "900"
+      - key: REFRESH_TTL_DAYS
+        value: "7"
+      - key: WEB_ORIGIN
+        sync: false
