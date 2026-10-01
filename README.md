@@ -54,7 +54,7 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 
 - [x] Tests e2e de la API
 - [x] Docker completo
-- [ ] CI/CD y despliegue
+- [x] CI/CD y despliegue
 
 ---
 
@@ -484,13 +484,29 @@ pnpm test:api
 
 ## Despliegue
 
-*Pendiente.* Esta sección documentará:
+```bash
+navegador ──► Vercel (frontend estático)
+└─ /api/* (rewrite, mismo origen) ──► Render (API en Docker) ──► Neon (PostgreSQL)
+```
 
-- Dockerfile de la API
-- Hosting del frontend (con proxy hacia la API) y de la API
-- Base de datos en la nube
-- Variables de entorno de producción
-- Pipeline de CI/CD con GitHub Actions
+
+| Pieza | Servicio | Plan |
+|---|---|---|
+| Frontend | Vercel | Hobby |
+| API | Render (contenedor Docker) | Gratuito |
+| Base de datos | Neon (PostgreSQL 17) | Gratuito |
+
+**Despliegue continuo.** Cada fusión a `main` ejecuta el CI y, si pasa, el trabajo `deploy`:
+aplica las migraciones en Neon, despliega en Render el commit exacto y espera a que
+`/api/health/live` responda con ese commit. Vercel despliega el frontend por su cuenta.
+
+**Arranque en frío.** El plan gratuito de Render duerme la API tras 15 minutos sin tráfico, y
+Neon suspende la base a los 5. El primer acceso después de un rato tarda unos 20 segundos.
+
+**Migraciones.** Se aplican antes de desplegar, así que cada una debe ser compatible con la
+versión anterior del código (agregar, no renombrar ni borrar en el mismo paso).
+
+**Secretos.** Viven en el Environment `production` de GitHub y en el panel de Render; nunca en el repositorio.
 
 ---
 
@@ -505,7 +521,7 @@ pnpm test:api
 7. ~~Dashboard y perfil~~
 8. ~~Tests e2e de la API~~
 9. ~~Dockerización completa~~
-10. CI/CD y despliegue
+10. ~~CI/CD y despliegue~~
 
 ### Mejoras identificadas
 
