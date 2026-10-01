@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://cotizador-api.onrender.com/api/:path*"
+            "destination": "https://cotizador-api-ha0j.onrender.com/api/:path*"
         },
         {
             "source": "/(.*)",
