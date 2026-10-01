@@ -56,6 +56,7 @@ describe('Autenticación (e2e)', () => {
 
     it('deja pasar las rutas públicas sin token', async () => {
         await http().get('/api/health').expect(200);
+        await http().get('/api/health/live').expect(200);
     });
 
     it('rota el refresh token y cierra todas las sesiones si detecta reuso', async () => {

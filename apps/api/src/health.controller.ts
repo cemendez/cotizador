@@ -7,6 +7,11 @@ import { PrismaService } from './prisma/prisma.service.js'
 export class HealthController {
     constructor(private readonly prisma: PrismaService) { }
 
+    @Get('live')
+    live() {
+        return { status: 'ok', commit: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? 'local' };
+    }
+
     @Get()
     async check() {
         await this.prisma.$queryRaw`SELECT 1`
