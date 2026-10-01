@@ -45,15 +45,24 @@ export function refreshSession(): Promise<AuthResponse | null> {
     return refreshPromise;
 }
 
+function fallbackMessage(status: number) {
+    if (status >= 500) {
+        return 'El servidor no está disponible. Si estuvo inactivo, puede tardar hasta un minuto en despertar; intenta de nuevo en un momento.';
+    }
+    if (status === 404) return 'No se encontró el servicio solicitado.';
+    return `No se pudo completar la solicitud (error ${status}).`;
+}
+
 async function toApiError(res: Response): Promise<ApiError> {
+    let message: string | undefined;
     try {
         const body = await res.json();
         // NestJS devuelve message como string o como arreglo (errores de validación)
-        const message = Array.isArray(body.message) ? body.message.join('. ') : body.message;
-        return new ApiError(res.status, message ?? res.statusText);
+        message = Array.isArray(body.message) ? body.message.join('. ') : body.message;
     } catch {
-        return new ApiError(res.status, res.statusText);
+        // La respuesta no era JSON (por ejemplo, un error del proxy): se usa el mensaje genérico
     }
+    return new ApiError(res.status, message || fallbackMessage(res.status));
 }
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
