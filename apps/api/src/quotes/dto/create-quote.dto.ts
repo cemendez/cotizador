@@ -5,6 +5,7 @@ import {
 } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
 import { QuoteItemDto } from './quote-item.dto.js';
+import { OptionalNotNull } from '../../common/decorators/optional-not-null.decorator.js';
 
 export class CreateQuoteDto {
     @IsUUID('4', { message: 'Cliente inválido' })
@@ -16,11 +17,11 @@ export class CreateQuoteDto {
     @MaxLength(200)
     title!: string;
 
-    @IsOptional()
+    @OptionalNotNull()
     @IsIn(['MXN', 'USD'])
-    currency?: string;
+    currency?: string
 
-    @IsOptional()
+    @OptionalNotNull()
     @IsNumber({ maxDecimalPlaces: 2 })
     @Min(0)
     @Max(100)
