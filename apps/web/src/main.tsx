@@ -6,12 +6,14 @@ import App from './App'
 import { AuthProvider } from './auth/AuthProvider';
 import './index.css';
 import { queryClient } from './lib/query-client';
+import { ServerWakingBanner } from './components/ServerWakingBanner';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <App />
+        <ServerWakingBanner />
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
