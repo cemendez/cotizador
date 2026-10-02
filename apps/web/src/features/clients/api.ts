@@ -63,11 +63,15 @@ export function useDeleteClient() {
     });
 }
 
-export function useClientOptions() {
+export function useClientSearch(search: string, enabled: boolean) {
     return useQuery({
-        queryKey: [...clientKeys.all, 'options'],
-        queryFn: () => api<Paginated<Client>>('/clients?pageSize=100'),
-        select: (res) => res.data,
-        staleTime: 60_000,
-    })
+        queryKey: [...clientKeys.all, 'search', search],
+        queryFn: () => {
+            const query = new URLSearchParams({ pageSize: '10' });
+            if (search) query.set('search', search);
+            return api<Paginated<Client>>(`/clients?${query}`);
+        },
+        enabled,
+        placeholderData: keepPreviousData,
+    });
 }
