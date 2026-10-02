@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import { ClientCombobox } from '../clients/ClientCombobox';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
 import { Button } from '../../components/ui/Button';
@@ -9,7 +10,6 @@ import { TextAreaField } from '../../components/ui/TextAreaField';
 import { TextField } from '../../components/ui/TextField';
 import { formatMoney } from '../../lib/format';
 import type { Quote } from '../../types/api';
-import { useClientOptions } from '../clients/api';
 import { useSaveQuote } from './api';
 import { calculateTotals } from './totals';
 
@@ -88,7 +88,6 @@ interface Props {
 export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
     const navigate = useNavigate();
     const saveQuote = useSaveQuote(quote?.id);
-    const { data: clients, isPending: loadingClients } = useClientOptions();
 
     const {
         register,
@@ -129,14 +128,24 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
                 <h2 className="font-semibold text-slate-900">Datos generales</h2>
                 <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-1">
-                        <SelectField label="Cliente *" error={errors.clientId?.message} disabled={loadingClients} {...register('clientId')}>
-                            <option value="">{loadingClients ? 'Cargando…' : 'Selecciona un cliente'}</option>
-                            {clients?.map((client) => (
-                                <option key={client.id} value={client.id}>
-                                    {client.company ? `${client.company} (${client.name})` : client.name}
-                                </option>
-                            ))}
-                        </SelectField>
+                        <div className="space-y-1">
+                            <Controller
+                                control={control}
+                                name="clientId"
+                                render={({ field, fieldState }) => (
+                                    <ClientCombobox
+                                        label="Cliente *"
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        onBlur={field.onBlur}
+                                        error={fieldState.error?.message}
+                                    />
+                                )}
+                            />
+                            <Link to="/clients/new" className="text-xs text-indigo-600 hover:underline">
+                                + Registrar cliente nuevo
+                            </Link>
+                        </div>
                         <Link to="/clients/new" className="text-xs text-indigo-600 hover:underline">
                             + Registrar cliente nuevo
                         </Link>
