@@ -2,10 +2,11 @@ import { Transform } from 'class-transformer';
 import { IsOptional, IsString, Matches, MaxLength, MinLength, ValidateIf } from "class-validator";
 import { Trim } from '../../common/decorators/trim.decorator.js'
 import { RFC_REGEX } from "../../common/validation/rfc.js";
+import { OptionalNotNull } from "../../common/decorators/optional-not-null.decorator.js";
 
 export class UpdateProfileDto {
     @Trim()
-    @ValidateIf((dto: UpdateProfileDto) => dto.name !== undefined)
+    @OptionalNotNull()
     @IsString({ message: 'El nombre es obligatorio' })
     @MinLength(2)
     @MaxLength(100)
