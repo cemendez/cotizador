@@ -49,6 +49,8 @@ Proyecto construido como práctica y portafolio del stack **NestJS + React con T
 - [x] Editor de cotizaciones con conceptos dinámicos y totales en vivo
 - [x] Cambios de estado con confirmación y apertura de PDFs protegidos
 - [x] Dashboard y pantalla de perfil
+- [x] Aviso cuando el servidor tarda en responder
+- [x] Selector de clientes con búsqueda
 
 **Pendiente**
 
@@ -525,11 +527,7 @@ versión anterior del código (agregar, no renombrar ni borrar en el mismo paso)
 
 ### Mejoras identificadas
 
-- `@ValidateIf` en lugar de `@IsOptional` para `name` en `UpdateClientDto` y `title` en `UpdateQuoteDto` (evitar que `null` llegue a campos obligatorios).
-- Paquete compartido (`packages/shared`) para tipos, enums y transiciones de estado usados por la API y el frontend.
-- Selector de clientes con búsqueda cuando haya más de 100.
 - Marcar automáticamente como vencidas las cotizaciones enviadas que pasaron su vigencia (tarea programada).
-- Límite de intentos de login con `@nestjs/throttler`.
 - Cantidad con letra en el contrato.
 
 ---
