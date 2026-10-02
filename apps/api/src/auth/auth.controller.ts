@@ -7,6 +7,9 @@ import { CurrentUser } from './decorators/current-user.decorator.js';
 import { Public } from './decorators/public.decorator.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
+import { Throttle } from '@nestjs/throttler';
+import { STRICT_LIMITS } from '../common/throttle-limits.js';
+
 
 const REFRESH_COOKIE = 'refresh_token';
 const COOKIE_PATH = '/api/auth';
@@ -19,6 +22,7 @@ export class AuthController {
     ) { }
 
     @Public()
+    @Throttle(STRICT_LIMITS.register)
     @Post('register')
     async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
         const { refreshToken, ...result } = await this.auth.register(dto);
@@ -27,6 +31,7 @@ export class AuthController {
     }
 
     @Public()
+    @Throttle(STRICT_LIMITS.login)
     @Post('login')
     @HttpCode(200)
     async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {

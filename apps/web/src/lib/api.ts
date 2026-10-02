@@ -46,6 +46,7 @@ export function refreshSession(): Promise<AuthResponse | null> {
 }
 
 function fallbackMessage(status: number) {
+    if (status === 429) return 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
     if (status >= 500) {
         return 'El servidor no está disponible. Si estuvo inactivo, puede tardar hasta un minuto en despertar; intenta de nuevo en un momento.';
     }

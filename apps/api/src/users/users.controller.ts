@@ -4,6 +4,8 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator.js'
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { UsersService } from './users.service.js';
+import { Throttle } from '@nestjs/throttler';
+import { STRICT_LIMITS } from '../common/throttle-limits.js';
 
 @Controller('users/me')
 export class UsersController {
@@ -14,6 +16,7 @@ export class UsersController {
         return this.users.updateProfile(user.id, dto);
     }
 
+    @Throttle(STRICT_LIMITS.changePassword)
     @Patch('password')
     @HttpCode(204)
     changePassword(@CurrentUser() user: AuthUser, @Body() dto: ChangePasswordDto) {
