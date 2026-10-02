@@ -1,8 +1,7 @@
-import { Controller, Get, Req } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common'
 import { Public } from './auth/decorators/public.decorator.js';
 import { PrismaService } from './prisma/prisma.service.js';
 import { SkipThrottle } from '@nestjs/throttler';
-import type { Request } from 'express';
 
 @Public()
 @SkipThrottle()
@@ -19,14 +18,5 @@ export class HealthController {
     async check() {
         await this.prisma.$queryRaw`SELECT 1`
         return { status: 'ok', db: `connected` }
-    }
-
-    @Get('ip')
-    ip(@Req() req: Request) {
-        return {
-            ip: req.ip,
-            forwardedFor: req.headers['x-forwarded-for'] ?? null,
-            trustedProxies: process.env.TRUST_PROXY ?? '0',
-        };
     }
 }
