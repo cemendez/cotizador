@@ -1,10 +1,20 @@
 import type { AuthResponse } from '../types/api';
+import { trackRequest } from './slow-requests';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 let accessToken: string | null = null;
 let refreshPromise: Promise<AuthResponse | null> | null = null;
 let onSessionExpired: (() => void) | null = null;
+
+async function trackedFetch(input: string, init?: RequestInit) {
+    const done = trackRequest();
+    try {
+        return await fetch(input, init);
+    } finally {
+        done();
+    }
+}
 
 export class ApiError extends Error {
     status: number;
@@ -30,7 +40,7 @@ export function setSessionExpiredHandler(handler: () => void) {
  * Si ya hay un refresh en curso, devuelve la misma promesa (una sola petición a la vez).
  */
 export function refreshSession(): Promise<AuthResponse | null> {
-    refreshPromise ??= fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' })
+    refreshPromise ??= trackedFetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' })
         .then(async (res) => {
             if (!res.ok) return null;
             const session = (await res.json()) as AuthResponse;
@@ -79,7 +89,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     if (body !== undefined) headers.set('Content-Type', 'application/json');
     if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
 
-    const res = await fetch(`${API_URL}${path}`, {
+    const res = await trackedFetch(`${API_URL}${path}`, {
         ...init,
         headers,
         credentials: 'include',
