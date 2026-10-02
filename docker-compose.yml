@@ -59,6 +59,7 @@ services:
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Define JWT_ACCESS_SECRET en el archivo .env de la raíz}
       JWT_ACCESS_TTL_SECONDS: 900
       REFRESH_TTL_DAYS: 7
+      TRUST_PROXY: 1
     depends_on:
       migrate:
         condition: service_completed_successfully

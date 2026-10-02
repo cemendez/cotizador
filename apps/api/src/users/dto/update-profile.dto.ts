@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString, Matches, MaxLength, MinLength, ValidateIf } from "class-validator";
+import { IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
 import { Trim } from '../../common/decorators/trim.decorator.js'
 import { RFC_REGEX } from "../../common/validation/rfc.js";
 import { OptionalNotNull } from "../../common/decorators/optional-not-null.decorator.js";

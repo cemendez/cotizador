@@ -1,6 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 import type { PrismaService } from '../src/prisma/prisma.service.js';
 import { auth, createClient, createQuote, createTestApp, registerUser, resetDatabase } from './helpers.js';
 
