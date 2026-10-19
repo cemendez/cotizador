@@ -71,4 +71,10 @@ export class AuthController {
             maxAge: Number(this.config.get('REFRESH_TTL_DAYS', 7)) * 24 * 60 * 60 * 1000,
         });
     }
+
+    @Public()
+    @Get('registration')
+    async registration() {
+        return { open: await this.auth.isRegistrationOpen() };
+    }
 }
