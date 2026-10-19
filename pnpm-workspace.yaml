@@ -5,3 +5,5 @@ allowBuilds:
   esbuild: true
   prisma: true
   "@swc/core": true
+overrides:
+  "@swc/core": "~1.15.0"
