@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { GuestOnly, RequireAuth } from './auth/route-guards';
 import { AppLayout } from './components/AppLayout';
 import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { RegisterRoute } from './pages/RegisterRoute';
 import { ClientFormPage } from './features/clients/ClientFormPage';
 import { ClientsPage } from './features/clients/ClientsPage';
 import { QuoteDetailPage } from './features/quotes/QuoteDetailPage';
@@ -17,7 +17,7 @@ export default function App() {
       <Routes>
         <Route element={<GuestOnly />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<RegisterRoute />} />
         </Route>
 
         <Route element={<RequireAuth />}>

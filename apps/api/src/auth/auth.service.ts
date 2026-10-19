@@ -16,7 +16,15 @@ export class AuthService {
         private readonly config: ConfigService,
     ) { }
 
+    async isRegistrationOpen() {
+        if (process.env.ALLOW_REGISTRATION === 'true') return true;
+        return (await this.prisma.user.count()) === 0;
+    }
     async register(dto: RegisterDto) {
+        if (!(await this.isRegistrationOpen())) {
+            throw new ForbiddenException('El registro está cerrado');
+        }
+
         const email = dto.email.toLowerCase().trim();
         const exists = await this.prisma.user.findUnique({ where: { email } });
         if (exists) throw new ConflictException('El correo ya está registrado');

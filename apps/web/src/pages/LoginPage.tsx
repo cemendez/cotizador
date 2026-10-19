@@ -6,6 +6,7 @@ import { useAuth } from '../auth/auth-context';
 import { Button } from '../components/ui/Button';
 import { TextField } from '../components/ui/TextField';
 import { ApiError } from '../lib/api';
+import { useRegistrationStatus } from '../auth/registration';
 
 const schema = z.object({
     email: z.string().trim().pipe(z.email('Correo inválido')),
@@ -17,6 +18,7 @@ type FormValues = z.infer<typeof schema>;
 export function LoginPage() {
     const { login } = useAuth();
     const location = useLocation();
+    const { data: registration } = useRegistrationStatus();
 
     const {
         register,
@@ -65,12 +67,14 @@ export function LoginPage() {
                     Entrar
                 </Button>
 
-                <p className="text-center text-sm text-slate-600">
-                    ¿No tienes cuenta?{' '}
-                    <Link to="/register" state={location.state} className="font-medium text-indigo-600 hover:underline">
-                        Regístrate
-                    </Link>
-                </p>
+                {registration?.open && (
+                    <p className="text-center text-sm text-slate-600">
+                        ¿No tienes cuenta?{' '}
+                        <Link to="/register" state={location.state} className="font-medium text-indigo-600 hover:underline">
+                            Regístrate
+                        </Link>
+                    </p>
+                )}
             </form>
         </div>
     )
