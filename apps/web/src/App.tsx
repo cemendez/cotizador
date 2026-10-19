@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { GuestOnly, RequireAuth } from './auth/route-guards';
 import { AppLayout } from './components/AppLayout';
 import { LoginPage } from './pages/LoginPage';
-import { RegisterRoute } from './pages/RegisterRoute';
+import { RegisterRoute } from './auth/RegisterRoute';
 import { ClientFormPage } from './features/clients/ClientFormPage';
 import { ClientsPage } from './features/clients/ClientsPage';
 import { QuoteDetailPage } from './features/quotes/QuoteDetailPage';
