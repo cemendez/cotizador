@@ -18,7 +18,7 @@ export async function createTestApp() {
 /** Vacía todas las tablas. Se llama antes de cada test para que sean independientes entre sí */
 export async function resetDatabase(prisma: PrismaService) {
     await prisma.$executeRawUnsafe(
-        'TRUNCATE TABLE "QuoteItem", "Quote", "Client", "RefreshToken", "User" RESTART IDENTITY CASCADE',
+        'TRUNCATE TABLE "QuoteItem", "Quote", "Client", "RefreshToken", "PricingSettings", "User" RESTART IDENTITY CASCADE',
     );
 }
 

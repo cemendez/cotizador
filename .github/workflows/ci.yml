@@ -36,6 +36,9 @@ jobs:
 
       - name: Tests unitarios
         run: pnpm test:api
+      
+      - name: Tests unitarios del frontend
+        run: pnpm --filter web test
 
   e2e:
     name: Tests e2e (API + PostgreSQL)
