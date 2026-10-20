@@ -96,3 +96,18 @@ export interface DashboardSummary {
     expiringSoon: DashboardQuote[];
     recent: DashboardQuote[];
 }
+
+export interface PricingSettings {
+    monthlyNetIncome: string;
+    costEquipment: string;
+    costTools: string;
+    costOffice: string;
+    costTransport: string;
+    costServices: string;
+    costAdvertising: string;
+    marginPercent: string;
+    taxReservePercent: string;
+    billableHoursPerMonth: string;
+    hourlyRate: string | null;
+    updatedAt: string | null;
+}

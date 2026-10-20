@@ -10,6 +10,7 @@ import { QuoteFormPage } from './features/quotes/QuoteFormPage';
 import { QuotesPage } from './features/quotes/QuotesPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { ProfilePage } from './features/profile/ProfilePage';
+import { PricingPage } from './features/pricing/PricingPage';
 
 export default function App() {
   return (
@@ -34,6 +35,8 @@ export default function App() {
             <Route path="/quotes/new" element={<QuoteFormPage />} />
             <Route path="/quotes/:id" element={<QuoteDetailPage />} />
             <Route path="/quotes/:id/edit" element={<QuoteFormPage />} />
+
+            <Route path="/pricing" element={<PricingPage />} />
           </Route>
         </Route>
 
