@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -76,15 +77,15 @@ jobs:
   deploy:
     name: Desplegar a producción
     needs: [checks, e2e, docker]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
       name: production
       url: ${{ vars.PRODUCTION_URL }}
     concurrency:
-      group: deploy-production
-      cancel-in-progress: false
+      group: ci-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+      cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
