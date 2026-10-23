@@ -1,0 +1,49 @@
+name: Backup
+
+on:
+  schedule:
+    - cron: '17 9 * * *' # diario, 09:17 UTC (03:17 Ciudad de México)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Instalar age
+        run: sudo apt-get update && sudo apt-get install -y age
+
+      - name: Volcado + cifrado
+        env:
+          BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          AGE_PUBLIC_KEY: ${{ secrets.AGE_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          FILE="cotizador-$(date -u +%Y%m%dT%H%M%SZ).dump.age"
+          docker run --rm -e DB="$BACKUP_DATABASE_URL" postgres:17 \
+            sh -c 'pg_dump --format=custom --no-owner --no-privileges --dbname "$DB"' \
+            | age -r "$AGE_PUBLIC_KEY" -o "$FILE"
+          # Un volcado vacío o diminuto significa que algo falló
+          test "$(stat -c %s "$FILE")" -gt 1024
+          echo "FILE=$FILE" >> "$GITHUB_ENV"
+
+      - name: Subir al bucket (Cloudflare R2)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 cp "$FILE" "s3://$R2_BUCKET/$FILE" \
+            --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+          aws s3 ls "s3://$R2_BUCKET/$FILE" \
+            --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
