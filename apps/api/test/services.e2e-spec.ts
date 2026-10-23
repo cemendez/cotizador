@@ -64,7 +64,7 @@ describe('Catálogo de servicios (e2e)', () => {
 
         const other = (await registerUser(app, 'Otro')).token;
         expect((await http().get('/api/services').set(auth(other)).expect(200)).body).toEqual([]);
-        await http().patch(`/api/services/${body.id}`).set(auth(other)).send({ name: 'X' }).expect(404);
+        await http().patch(`/api/services/${body.id}`).set(auth(other)).send({ name: 'Hackeado' }).expect(404);
         await http().delete(`/api/services/${body.id}`).set(auth(other)).expect(404);
     });
 });
