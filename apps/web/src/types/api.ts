@@ -41,6 +41,7 @@ export interface QuoteItem {
     unitPrice: string;
     amount: string;
     position: number;
+    estimatedHours: string | null;
 }
 
 export interface QuoteSummary {
@@ -110,4 +111,12 @@ export interface PricingSettings {
     billableHoursPerMonth: string;
     hourlyRate: string | null;
     updatedAt: string | null;
+}
+
+export interface Service {
+    id: string;
+    name: string;
+    description: string | null;
+    estimatedHours: string;
+    fixedPrice: string | null;
 }

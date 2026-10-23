@@ -43,6 +43,18 @@ describe('calculateQuote', () => {
         );
         expect(items.map((i) => i.position)).toEqual([0, 1]);
     });
+
+    it('conserva las horas estimadas y las deja en null si no se indican', () => {
+        const { items } = calculateQuote(
+            [
+                { description: 'a', quantity: 1, unitPrice: 1, estimatedHours: 12.5 },
+                { description: 'b', quantity: 1, unitPrice: 1 },
+            ],
+            0,
+        );
+        expect(items[0].estimatedHours?.toString()).toBe('12.5');
+        expect(items[1].estimatedHours).toBeNull();
+    });
 });
 
 describe('formatFolio', () => {

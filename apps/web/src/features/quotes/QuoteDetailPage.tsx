@@ -8,6 +8,7 @@ import type { QuoteStatus } from '../../types/api';
 import { openPdf, useChangeQuoteStatus, useDeleteQuote, useQuote } from './api';
 import { STATUS_ACTIONS, STATUS_CONFIRM, STATUS_LABELS } from './status';
 import { StatusBadge } from './StatusBadge';
+import { calculateEffectiveRate } from './effective-rate';
 
 function InfoRow({ label, children }: { label: string; children: ReactNode }) {
     return (
@@ -34,6 +35,13 @@ export function QuoteDetailPage() {
 
     const money = (value: string) => formatMoney(value, quote.currency);
     const isDraft = quote.status === 'DRAFT';
+    const effective = calculateEffectiveRate(
+        quote.items.map((item) => ({
+            amount: Number(item.amount),
+            estimatedHours: item.estimatedHours === null ? null : Number(item.estimatedHours),
+        })),
+        null,
+    );
 
     const handlePdf = async (kind: 'pdf' | 'contract') => {
         setPdfError(null);
@@ -153,6 +161,12 @@ export function QuoteDetailPage() {
                         </InfoRow>
                         {quote.client.rfc && <InfoRow label="RFC">{quote.client.rfc}</InfoRow>}
                         <InfoRow label="Moneda">{quote.currency}</InfoRow>
+                        {effective.rate !== null && (
+                            <InfoRow label="Tarifa efectiva">
+                                {formatMoney(effective.rate, quote.currency)} / h
+                                <span className="block text-slate-500">{effective.hours} h estimadas</span>
+                            </InfoRow>
+                        )}
                         <InfoRow label="Creada">{formatDate(quote.createdAt)}</InfoRow>
                         {quote.validUntil && <InfoRow label="Vigencia">{formatDateOnly(quote.validUntil)}</InfoRow>}
                         {quote.sentAt && <InfoRow label="Enviada">{formatDate(quote.sentAt)}</InfoRow>}

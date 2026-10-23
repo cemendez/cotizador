@@ -7,6 +7,7 @@ const links = [
     { to: '/clients', label: 'Clientes', end: false },
     { to: '/quotes', label: 'Cotizaciones', end: false },
     { to: '/pricing', label: 'Mi tarifa', end: false },
+    { to: '/services', label: 'Servicios', end: false },
 ];
 
 export function AppLayout() {

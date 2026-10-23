@@ -23,4 +23,10 @@ export class QuoteItemDto {
     @Min(0)
     @Max(9_999_999_999)
     unitPrice!: number;
+
+    @IsOptional()
+    @IsNumber({ maxDecimalPlaces: 2 }, { message: 'Horas inválidas (máximo 2 decimales)' })
+    @Min(0.01)
+    @Max(99_999)
+    estimatedHours?: number | null;
 }
