@@ -11,6 +11,7 @@ import { QuotesPage } from './features/quotes/QuotesPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { ProfilePage } from './features/profile/ProfilePage';
 import { PricingPage } from './features/pricing/PricingPage';
+import { ServicesPage } from './features/services/ServicesPage';
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/quotes/:id/edit" element={<QuoteFormPage />} />
 
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/services" element={<ServicesPage />} />
           </Route>
         </Route>
 

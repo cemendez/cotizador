@@ -8,6 +8,7 @@ export interface QuoteItemInput {
     unit?: string | null;
     quantity: DecimalInput;
     unitPrice: DecimalInput;
+    estimatedHours?: DecimalInput | null;
 }
 
 const round2 = (value: Prisma.Decimal) => value.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
@@ -21,6 +22,7 @@ export function calculateQuote(items: QuoteItemInput[], taxRate: DecimalInput) {
             unit: item.unit ?? null,
             quantity,
             unitPrice,
+            estimatedHours: item.estimatedHours == null ? null : new Decimal(item.estimatedHours),
             amount: round2(quantity.mul(unitPrice)),
             position: index,
         };

@@ -119,4 +119,30 @@ describe('Cotizaciones (e2e)', () => {
             expect(res.body.subarray(0, 5).toString()).toBe('%PDF-');
         });
     });
+
+    describe('horas estimadas', () => {
+        const itemsWithHours = [
+            { description: 'Diseño', quantity: 1, unitPrice: 7000, estimatedHours: 20 },
+            { description: 'Hosting', quantity: 1, unitPrice: 500 },
+        ];
+        const hoursOf = (items: Array<{ estimatedHours: string | null }>) => items.map((i) => i.estimatedHours);
+
+        it('guarda las horas, deja null donde no se indican y las conserva al cambiar el IVA', async () => {
+            const quote = await createQuote(app, token, clientId, { items: itemsWithHours });
+            expect(hoursOf(quote.items)).toEqual(['20', null]);
+
+            const res = await http().patch(`/api/quotes/${quote.id}`).set(auth(token)).send({ taxRate: 0 }).expect(200);
+            expect(hoursOf(res.body.items)).toEqual(['20', null]);
+        });
+
+        it('rechaza horas en cero o con más de 2 decimales', async () => {
+            for (const estimatedHours of [0, 1.234]) {
+                await http()
+                    .post('/api/quotes')
+                    .set(auth(token))
+                    .send({ clientId, title: 'x', items: [{ description: 'a', quantity: 1, unitPrice: 1, estimatedHours }] })
+                    .expect(400);
+            }
+        });
+    });
 });

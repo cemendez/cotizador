@@ -11,6 +11,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { GENERAL_LIMIT } from './common/throttle-limits.js';
 import { PricingModule } from './pricing/pricing.module.js';
+import { ServiceModule } from './service/service.module.js';
+import { ServicesService } from './services/services.service.js';
+import { ServicesController } from './services/services.controller.js';
 
 @Module({
   imports: [
@@ -21,8 +24,8 @@ import { PricingModule } from './pricing/pricing.module.js';
       // Los tests e2e lo desactivan (hacen cientos de peticiones desde la misma IP)
       skipIf: () => process.env.THROTTLE_DISABLED === 'true',
     }),
-    PrismaModule, AuthModule, ClientsModule, QuotesModule, UsersModule, DashboardModule, PricingModule],
-  controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+    PrismaModule, AuthModule, ClientsModule, QuotesModule, UsersModule, DashboardModule, PricingModule, ServiceModule],
+  controllers: [HealthController, ServicesController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }, ServicesService],
 })
 export class AppModule { }

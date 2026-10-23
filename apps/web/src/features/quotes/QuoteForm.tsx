@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
-import { ClientCombobox } from '../clients/ClientCombobox';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
 import { Button } from '../../components/ui/Button';
@@ -9,18 +8,32 @@ import { SelectField } from '../../components/ui/SelectField';
 import { TextAreaField } from '../../components/ui/TextAreaField';
 import { TextField } from '../../components/ui/TextField';
 import { formatMoney } from '../../lib/format';
-import type { Quote } from '../../types/api';
+import { toNullableNumber, twoDecimals } from '../../lib/validation';
+import type { Quote, Service } from '../../types/api';
+import { ClientCombobox } from '../clients/ClientCombobox';
+import { usePricing } from '../pricing/api';
+import { useServices } from '../services/api';
+import { servicePrice } from '../services/price';
 import { useSaveQuote } from './api';
+import { calculateEffectiveRate } from './effective-rate';
+import { EffectiveRatePanel } from './EffectiveRatePanel';
 import { calculateTotals } from './totals';
 
-const twoDecimals = (value: number) => Math.abs(value * 100 - Math.round(value * 100)) < 1e-6;
 const numberField = () => z.number({ error: 'Número inválido' });
 
 const itemSchema = z.object({
     description: z.string().trim().min(1, 'Describe el concepto').max(500),
     unit: z.string().trim().max(30),
     quantity: numberField().min(0.01, 'Debe ser mayor a 0').max(99_999_999).refine(twoDecimals, 'Máximo 2 decimales'),
-    unitPrice: numberField().min(0, 'No puede ser negativo').max(9_999_999_999).refine(twoDecimals, 'Máximo 2 decimales'),
+    unitPrice: numberField()
+        .min(0, 'No puede ser negativo')
+        .max(9_999_999_999)
+        .refine(twoDecimals, 'Máximo 2 decimales'),
+    estimatedHours: numberField()
+        .min(0.01, 'Debe ser mayor a 0')
+        .max(99_999, 'Valor demasiado alto')
+        .refine(twoDecimals, 'Máximo 2 decimales')
+        .nullable(),
 });
 
 const schema = z.object({
@@ -36,7 +49,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const emptyItem = () => ({ description: '', unit: '', quantity: 1, unitPrice: 0 });
+const emptyItem = () => ({ description: '', unit: '', quantity: 1, unitPrice: 0, estimatedHours: null });
 
 // YYYY-MM-DD en hora local (el formato "en-CA" produce exactamente eso)
 const dateInDays = (days: number) => {
@@ -71,6 +84,7 @@ function toFormValues(quote?: Quote, initialClientId = ''): FormValues {
             unit: item.unit ?? '',
             quantity: Number(item.quantity),
             unitPrice: Number(item.unitPrice),
+            estimatedHours: item.estimatedHours === null ? null : Number(item.estimatedHours),
         })),
     };
 }
@@ -88,6 +102,9 @@ interface Props {
 export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
     const navigate = useNavigate();
     const saveQuote = useSaveQuote(quote?.id);
+    const { data: pricing } = usePricing();
+    const { data: services } = useServices();
+    const hourlyRate = pricing?.hourlyRate ? Number(pricing.hourlyRate) : null;
 
     const {
         register,
@@ -100,7 +117,7 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
         defaultValues: toFormValues(quote, initialClientId),
     });
 
-    const { fields, append, remove, move } = useFieldArray({ control, name: 'items' });
+    const { fields, append, remove, replace, move } = useFieldArray({ control, name: 'items' });
 
     // useWatch re-renderiza solo cuando cambian estos valores: base de los totales en vivo
     const items = useWatch({ control, name: 'items' });
@@ -108,6 +125,29 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
     const currency = useWatch({ control, name: 'currency' });
     const totals = calculateTotals(items ?? [], taxRate);
     const money = (value: number) => formatMoney(value, currency);
+
+    const effective = calculateEffectiveRate(
+        (items ?? []).map((item, index) => ({
+            amount: totals.amounts[index] ?? 0,
+            estimatedHours:
+                typeof item?.estimatedHours === 'number' && Number.isFinite(item.estimatedHours) ? item.estimatedHours : null,
+        })),
+        currency === 'MXN' ? hourlyRate : null,
+    );
+
+    const addService = (service: Service) => {
+        const item = {
+            description: service.name,
+            unit: 'servicio',
+            quantity: 1,
+            unitPrice: servicePrice(service, hourlyRate) ?? 0,
+            estimatedHours: Number(service.estimatedHours),
+        };
+        // Si lo único que hay es el concepto vacío inicial, el servicio lo reemplaza
+        const onlyEmpty = fields.length === 1 && !(items?.[0]?.description ?? '').trim();
+        if (onlyEmpty) replace([item]);
+        else append(item);
+    };
 
     const onSubmit = async (values: FormValues) => {
         try {
@@ -128,24 +168,19 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
                 <h2 className="font-semibold text-slate-900">Datos generales</h2>
                 <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-1">
-                        <div className="space-y-1">
-                            <Controller
-                                control={control}
-                                name="clientId"
-                                render={({ field, fieldState }) => (
-                                    <ClientCombobox
-                                        label="Cliente *"
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        onBlur={field.onBlur}
-                                        error={fieldState.error?.message}
-                                    />
-                                )}
-                            />
-                            <Link to="/clients/new" className="text-xs text-indigo-600 hover:underline">
-                                + Registrar cliente nuevo
-                            </Link>
-                        </div>
+                        <Controller
+                            control={control}
+                            name="clientId"
+                            render={({ field, fieldState }) => (
+                                <ClientCombobox
+                                    label="Cliente *"
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    error={fieldState.error?.message}
+                                />
+                            )}
+                        />
                         <Link to="/clients/new" className="text-xs text-indigo-600 hover:underline">
                             + Registrar cliente nuevo
                         </Link>
@@ -171,6 +206,24 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
             <section className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-slate-200">
                 <h2 className="font-semibold text-slate-900">Conceptos</h2>
 
+                {services && services.length > 0 && (
+                    <div className="space-y-2">
+                        <p className="text-sm font-medium text-slate-700">Agregar desde tu catálogo</p>
+                        <div className="flex flex-wrap gap-2">
+                            {services.map((service) => (
+                                <button
+                                    key={service.id}
+                                    type="button"
+                                    onClick={() => addService(service)}
+                                    className="rounded-full border border-slate-300 bg-white px-3 py-1 text-sm text-slate-700 hover:bg-slate-50"
+                                >
+                                    + {service.name} <span className="text-slate-500">({Number(service.estimatedHours)} h)</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="hidden grid-cols-12 gap-2 text-xs font-medium uppercase text-slate-500 sm:grid">
                     <span className="col-span-5">Descripción</span>
                     <span className="col-span-1">Unidad</span>
@@ -194,7 +247,26 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
                                     className={cellClass(Boolean(itemErrors?.description))}
                                     {...register(`items.${index}.description`)}
                                 />
-                                {itemErrors?.description && <p className="mt-1 text-xs text-red-600">{itemErrors.description.message}</p>}
+                                {itemErrors?.description && (
+                                    <p className="mt-1 text-xs text-red-600">{itemErrors.description.message}</p>
+                                )}
+                                <div className="mt-1 flex items-center gap-2">
+                                    <label htmlFor={`hours-${field.id}`} className="text-xs text-slate-500">
+                                        Horas estimadas (opcional)
+                                    </label>
+                                    <div className="w-24">
+                                        <input
+                                            id={`hours-${field.id}`}
+                                            type="number"
+                                            step="0.01"
+                                            className={`${cellClass(Boolean(itemErrors?.estimatedHours))} text-right`}
+                                            {...register(`items.${index}.estimatedHours`, { setValueAs: toNullableNumber })}
+                                        />
+                                    </div>
+                                </div>
+                                {itemErrors?.estimatedHours && (
+                                    <p className="mt-1 text-xs text-red-600">{itemErrors.estimatedHours.message}</p>
+                                )}
                             </div>
                             <div className="col-span-4 sm:col-span-1">
                                 <input
@@ -280,6 +352,8 @@ export function QuoteForm({ quote, initialClientId, cancelTo }: Props) {
                         <dd className="tabular-nums">{money(totals.total)}</dd>
                     </div>
                 </dl>
+
+                <EffectiveRatePanel result={effective} hourlyRate={hourlyRate} currency={currency} />
             </section>
 
             <section className="space-y-5 rounded-2xl bg-white p-6 ring-1 ring-slate-200">
