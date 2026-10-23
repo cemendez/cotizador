@@ -45,6 +45,8 @@ export class PricingService {
     save(userId: string, dto: UpdatePricingDto) {
         return this.prisma.pricingSettings.upsert({
             where: { userId },
+            // El DTO solo aporta datos (no se usan sus métodos), por eso es seguro esparcirlo
+            // oxlint-disable-next-line typescript/no-misused-spread
             create: { ...dto, userId },
             update: dto,
             select: pricingSelect,
