@@ -8,7 +8,7 @@ Gestor de clientes y cotizaciones para freelancers. Calcula tu tarifa por hora, 
 Lo construí de cero para aprender el stack **NestJS + React con TypeScript**, y hoy lo uso con mis propios clientes.
 
 **Autor:** Carlos Méndez · [carlosemendez.com](https://carlosemendez.com)
-**Demo:** <https://TU-APP.vercel.app> (el registro está cerrado: es una instalación personal, mira las capturas)
+**Caso de estudio:** <https://carlosemendez.com/lab/cotizador> (el registro está cerrado: es una instalación personal, mira las capturas)
 
 ![Dashboard](docs/screenshots/01-dashboard.png)
 
