@@ -1,0 +1,5 @@
+# Falsos positivos revisados a mano
+# JWT_ACCESS_SECRET de apps/api/.env.test: valor de prueba local, distinto al de producción
+ee9c161c395d38f5482dd892b137169314833761:apps/api/.env.test:generic-api-key:5
+# URL de ejemplo con token de mentira en apps/api/README.md
+a6def5ff1bc741897307c41136d34ede98d48cc5:apps/api/README.md:generic-api-key:5
